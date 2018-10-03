@@ -1,0 +1,25 @@
+{
+  "kind": "Pod",
+  "apiVersion": "v1",
+  "metadata": {
+    "name": "enb",
+    "labels": {
+      "name": "eNB"
+    }
+  },
+  "spec": {
+    "hostNetwork": true,
+    "containers": [
+      {
+        "name": "enb",
+        "image": "5gempower/srsenb",
+	"securityContext": {
+	  "privileged": true
+	}
+      }
+    ],
+    "nodeSelector": {
+        "node1": "enodeb"
+    }
+  }
+}
