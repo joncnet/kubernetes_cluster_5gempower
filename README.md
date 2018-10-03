@@ -52,6 +52,10 @@ In the dashboard press skip to sign-in
 Run 'kubectl get nodes' to get the names of your cluster’s nodes. Pick out the one that you want to add a label to, and then run 'kubectl label nodes <node-name> <label-key>=<label-value>', to add a label to the node you’ve chosen. 
 For example, if my node name is ‘clusternode1’ and my desired label is ‘node1=enodeb’, then I can run 'kubectl label nodes clusternode1 node1=enodeb'. Depending on this label, 'nodeSelector' parameter in your pod configuration file(YAML/JSON) needs to be updated accordingly.
 
+*Deploying Pods:*  
+Pods can be deployed directly from the dashboard by selecting the required pod configuration file. In this repository you can find pod configuration files for deploying srsenb, srsepc and empower-runtime controller.  
+
+
 ## Perform below operations only in Worker nodes as a root user  
 
 *Run 'sudo kubeadm join $Master_IP$:6443 --token df4gi8.a6q4yp5tut2hp9e0 --discovery-token-ca-cert-hash sha256:$hash$' command that was saved before to join the cluster*   
