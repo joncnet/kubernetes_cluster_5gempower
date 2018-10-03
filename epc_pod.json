@@ -1,0 +1,25 @@
+{
+  "kind": "Pod",
+  "apiVersion": "v1",
+  "metadata": {
+    "name": "epc",
+    "labels": {
+      "name": "ePC"
+    }
+  },
+  "spec": {
+    "hostNetwork": true,
+    "containers": [
+      {
+        "name": "epc",
+        "image": "5gempower/srsepc",
+	"securityContext": {
+	  "privileged": true
+	}
+      }
+    ],
+    "nodeSelector": {
+        "node2": "corenetwork"
+    }
+  }
+}
