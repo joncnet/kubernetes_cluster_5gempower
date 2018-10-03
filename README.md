@@ -20,9 +20,9 @@ sudo apt-get install -y kubelet kubeadm kubectl kubernetes-cni
 
 # Creating a cluster  
 
-git clone https://github.com/Tejas-Subramanya/kubernetes_cluster_5gempower  
-
 ## Perform below operations only in Master node  
+
+git clone https://github.com/Tejas-Subramanya/kubernetes_cluster_5gempower  
 
 sudo kubeadm init --pod-network-cidr=10.244.0.0/16  
 
@@ -48,8 +48,11 @@ Access dashboard from the browser: http://localhost:8001/api/v1/namespaces/kube-
 sudo kubectl create -f kubernetes_cluster_5gempower/dashboard-admin.yaml  
 In the dashboard press skip to sign-in  
 
+*Assigning labels to nodes of the cluster:*  
+Run 'kubectl get nodes' to get the names of your cluster’s nodes. Pick out the one that you want to add a label to, and then run 'kubectl label nodes <node-name> <label-key>=<label-value>', to add a label to the node you’ve chosen. 
+For example, if my node name is ‘clusternode1’ and my desired label is ‘node1=enodeb’, then I can run 'kubectl label nodes clusternode1 node1=enodeb'. Depending on this label, 'nodeSelector' parameter in your pod configuration file(YAML/JSON) needs to be updated accordingly.
+
 ## Perform below operations only in Worker nodes as a root user  
 
-*Run the 'kubeadm join' command that was saved before to join the cluster like below:*  
-sudo kubeadm join $Master_IP$:6443 --token df4gi8.a6q4yp5tut2hp9e0 --discovery-token-ca-cert-hash sha256:$hash$  
-*Replace $Master_IP$ with actual IP and $hash$ with actual hash*
+*Run 'sudo kubeadm join $Master_IP$:6443 --token df4gi8.a6q4yp5tut2hp9e0 --discovery-token-ca-cert-hash sha256:$hash$' command that was saved before to join the cluster*   
+*Replace $Master_IP$ with actual IP and $hash$ with actual hash.*  
