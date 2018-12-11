@@ -1,14 +1,14 @@
-## build : docker build -t srsenb .
-## run :   docker run --net=host --rm --privileged -v /dev/bus/usb:/dev/bus/usb -it srsenb
+## build : docker build -t 5gempower/srsenb .
+## run :   docker run --net=host --rm --privileged -v /dev/bus/usb:/dev/bus/usb -it 5gempower/srsenb
 
 FROM ubuntu:18.04
-MAINTAINER Tejas Subramanya <t.subramanya@fbk.eu>
+MAINTAINER Giovanni Baggio <g.baggio@fbk.eu>
 ENV DEBIAN_FRONTEND noninteractive
 
 # Dependencies for the UHD driver for the USRP hardware
 RUN apt-get update && \
     apt-get -yq dist-upgrade && \
-    apt-get -yq install autoconf build-essential libusb-1.0-0-dev cmake wget pkg-config libboost-all-dev python-dev python-cheetah git subversion
+    apt-get -yq install autoconf build-essential libusb-1.0-0-dev cmake wget pkg-config libboost-all-dev python-dev python-cheetah git subversion curl iproute2
 
 # Dependencies for UHD image downloader script
 RUN apt-get -yq install python-mako python-requests 
@@ -36,5 +36,15 @@ ADD drb.conf /empower-srsLTE/build/srsenb/src/drb.conf
 ADD rr.conf /empower-srsLTE/build/srsenb/src/rr.conf
 ADD sib.conf /empower-srsLTE/build/srsenb/src/sib.conf
 
+# Add Kubernetes launch scripts
+ADD dns_replace.sh /
+
+# Set env variables
+ENV empower_controller=no
+ENV enb_id=0x19B
+ENV cell_id=0x01
+ENV phy_cell_id=1
+ENV tac=0x0001
+
 # Run directly the eNodeB code from SRS
-ENTRYPOINT ./empower-srsLTE/build/srsenb/src/srsenb /empower-srsLTE/build/srsenb/src/enb.conf
+ENTRYPOINT env ; ./dns_replace.sh ; cat /empower-srsLTE/build/srsenb/src/enb.conf ; ./empower-srsLTE/build/srsenb/src/srsenb /empower-srsLTE/build/srsenb/src/enb.conf
