@@ -37,9 +37,6 @@ ADD pod_ip_rest.sh /
 
 RUN dos2unix /root/.srs/srsepc_if_masq.sh
 
-# Run directly the eNodeB code from SRS
-#ENTRYPOINT ./empower-srsLTE/build/srsenb/src/srsenb
-
 #Add configuration files from empower-srs epc
 ADD epc.conf /srsLTE/build/srsepc/src/epc.conf
 ADD user_db.csv /srsLTE/build/srsepc/src/user_db.csv
@@ -55,5 +52,7 @@ ENV mme_code=0x1a
 ENV mme_group=0x0001
 ENV tac=0x0001
 
-# Run directly the epc code from SRS
-ENTRYPOINT sleep 5 ; (./pod_ip_rest.sh &) ; ./dns_replace.sh ; cat /srsLTE/build/srsepc/src/epc.conf ; cat /srsLTE/build/srsepc/src/mbms.conf ; ./srsLTE/build/srsepc/src/srsepc_if_masq.sh `ip route get 1 | awk '{print $(NF-4);exit}'` ; ./srsLTE/build/srsepc/src/srsepc /srsLTE/build/srsepc/src/epc.conf
+ADD launcher.sh /
+
+# Run the launcher script
+ENTRYPOINT ["/launcher.sh"]

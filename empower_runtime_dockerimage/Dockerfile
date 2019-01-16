@@ -8,10 +8,11 @@ RUN apk add --no-cache --virtual .build-deps python3-dev && apk add --no-cache -
 RUN pip3 install tornado sqlalchemy construct==2.5.2
 
 # Fetching the latest repository from empower-runtime.
-RUN git clone https://github.com/5g-empower/empower-runtime.git && cd empower-runtime && mkdir deploy
+RUN git clone https://github.com/5g-empower/empower-runtime.git && cd empower-runtime && git reset --hard 5bbf7d76fa4b9825250d998bd62ffc321f0ae583 && mkdir deploy
 
 # Copy downloader script into the container
 ADD db_downloader.sh /
+ADD launcher.sh /
 
-# Run directly the controller
-ENTRYPOINT ./db_downloader.sh ; ./empower-runtime/empower-runtime.py
+# Run the launcher script
+ENTRYPOINT ["/launcher.sh"]

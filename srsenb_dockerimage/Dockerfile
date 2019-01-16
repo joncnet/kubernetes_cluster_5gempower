@@ -31,10 +31,11 @@ ADD CMakeLists.txt /empower-srsLTE/srsenb/CMakeLists.txt
 RUN cd empower-srsLTE && mkdir build && cd build && cmake ../ && make && make install
 
 # Add configuration files from SRS
-ADD enb.conf /empower-srsLTE/build/srsenb/src/enb.conf
-ADD drb.conf /empower-srsLTE/build/srsenb/src/drb.conf
-ADD rr.conf /empower-srsLTE/build/srsenb/src/rr.conf
-ADD sib.conf /empower-srsLTE/build/srsenb/src/sib.conf
+ADD enb.conf /empower-srsLTE/build/srsenb/src/
+ADD drb.conf /empower-srsLTE/build/srsenb/src/
+ADD rr.conf /empower-srsLTE/build/srsenb/src/
+ADD sib.conf /empower-srsLTE/build/srsenb/src/
+ADD sib.conf.mbsfn /empower-srsLTE/build/srsenb/src/
 
 # Add Kubernetes launch scripts
 ADD dns_replace.sh /
@@ -42,9 +43,11 @@ ADD dns_replace.sh /
 # Set env variables
 ENV empower_controller=no
 ENV enb_id=0x19B
-ENV cell_id=0x01
-ENV phy_cell_id=1
+ENV cell_id=0x03
+ENV phy_cell_id=3
 ENV tac=0x0001
 
-# Run directly the eNodeB code from SRS
-ENTRYPOINT env ; ./dns_replace.sh ; cat /empower-srsLTE/build/srsenb/src/enb.conf ; ./empower-srsLTE/build/srsenb/src/srsenb /empower-srsLTE/build/srsenb/src/enb.conf
+ADD launcher.sh /
+
+# Run the launcher script
+ENTRYPOINT ["/launcher.sh"]
