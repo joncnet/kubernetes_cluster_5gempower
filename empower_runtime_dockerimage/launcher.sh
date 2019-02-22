@@ -5,11 +5,16 @@ _term() {
   kill -TERM "$child"
 }
 
-trap myterm SIGTERM
+trap _term SIGTERM
 
 env
 ./db_downloader.sh
-./empower-runtime/empower-runtime.py &
+
+if [ "$empower_app" ]; then
+    ./empower-runtime/empower-runtime.py apps.$empower_app --tenant_id=$empower_tenant_id &
+else
+    ./empower-runtime/empower-runtime.py &
+fi
 
 child=$!
 

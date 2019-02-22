@@ -8,7 +8,9 @@ ENV DEBIAN_FRONTEND noninteractive
 # Dependencies for the UHD driver for the USRP hardware
 RUN apt-get update && \
     apt-get -yq dist-upgrade && \
-    apt-get -yq install autoconf build-essential libusb-1.0-0-dev cmake wget pkg-config libboost-all-dev python-dev python-cheetah git subversion curl iproute2
+    apt-get -yq install autoconf build-essential libusb-1.0-0-dev cmake wget pkg-config libboost-all-dev python-dev python-cheetah git subversion curl iproute2 net-tools iputils-ping tcpdump python3-pip
+
+RUN pip3 install requests
 
 # Dependencies for UHD image downloader script
 RUN apt-get -yq install python-mako python-requests 
@@ -39,13 +41,17 @@ ADD sib.conf.mbsfn /empower-srsLTE/build/srsenb/src/
 
 # Add Kubernetes launch scripts
 ADD dns_replace.sh /
+ADD tunnel_setup.py /
 
 # Set env variables
+ENV tunnelling=yes
 ENV empower_controller=no
 ENV enb_id=0x19B
 ENV cell_id=0x03
 ENV phy_cell_id=3
 ENV tac=0x0001
+ENV mcc=222
+ENV mnc=93
 
 ADD launcher.sh /
 
