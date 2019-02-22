@@ -11,7 +11,9 @@ ENV DEBIAN_FRONTEND noninteractive
 # Dependencies for the UHD driver for the USRP hardware
 RUN apt-get update && \
     apt-get -yq dist-upgrade && \
-    apt-get -yq install autoconf build-essential libusb-1.0-0-dev cmake wget pkg-config libboost-all-dev python-dev python-cheetah git subversion curl iproute2 netcat gawk iptables
+    apt-get -yq install autoconf build-essential libusb-1.0-0-dev cmake wget pkg-config libboost-all-dev python-dev python-cheetah git subversion curl iproute2 netcat gawk iptables net-tools python3-pip iputils-ping
+
+RUN pip3 install requests
 
 # Dependencies for UHD image downloader script
 RUN apt-get -yq install python-mako python-requests dos2unix
@@ -29,9 +31,11 @@ RUN git clone https://github.com/joncnet/srsLTE && cd srsLTE && mkdir build && c
 ADD epc.conf /root/.srs/epc.conf
 ADD mbms.conf /root/.srs/mbms.conf
 ADD user_db.csv /root/.srs/user_db.csv
+ADD mydb.csv /root/.srs/mydb.csv
 ADD srsepc_if_masq.sh /root/.srs/srsepc_if_masq.sh
 
 # Add Kubernetes launch scripts
+ADD tunnel_setup.py /
 ADD dns_replace.sh /
 ADD pod_ip_rest.sh /
 
@@ -40,17 +44,23 @@ RUN dos2unix /root/.srs/srsepc_if_masq.sh
 #Add configuration files from empower-srs epc
 ADD epc.conf /srsLTE/build/srsepc/src/epc.conf
 ADD user_db.csv /srsLTE/build/srsepc/src/user_db.csv
+ADD mydb.csv /srsLTE/build/srsepc/src/mydb.csv
 ADD mbms.conf /srsLTE/build/srsepc/src/mbms.conf
 ADD srsepc_if_masq.sh /srsLTE/build/srsepc/src/srsepc_if_masq.sh
 
 RUN dos2unix /srsLTE/build/srsepc/src/srsepc_if_masq.sh
 
 # Set env variables
+ENV tunnelling=yes
 ENV sgi_mb_if_addr=10.20.30.254
 ENV sgi_if_addr=10.20.30.1
 ENV mme_code=0x1a
 ENV mme_group=0x0001
 ENV tac=0x0001
+ENV mcc=222
+ENV mnc=93
+ENV db_file=user_db
+ENV dns_addr=8.8.8.8
 
 ADD launcher.sh /
 
