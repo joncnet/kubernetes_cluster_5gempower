@@ -21,6 +21,9 @@ RUN wget http://files.ettus.com/binaries/uhd/uhd_003.010.001.001-release/uhd-3.1
 # Dependencies for SRSeNB
 RUN apt-get -yq --no-install-recommends --assume-yes install libfftw3-dev libmbedtls-dev libboost-program-options-dev libconfig++-dev libsctp-dev
 
+
+ENV sfsdfs=sfsd
+
 # Fetch and building empower-proto 
 RUN git clone https://github.com/5g-empower/empower-enb-proto && cd empower-enb-proto && make && make install
 
@@ -44,7 +47,7 @@ ADD dns_replace.sh /
 ADD tunnel_setup.py /
 
 # Set env variables
-ENV tunnelling=yes
+ENV tunnelling=no
 ENV empower_controller=no
 ENV enb_id=0x19B
 ENV cell_id=0x03
@@ -52,6 +55,8 @@ ENV phy_cell_id=3
 ENV tac=0x0001
 ENV mcc=222
 ENV mnc=93
+ENV n_prb=25
+ENV dl_earfcn=3400
 
 ADD launcher.sh /
 

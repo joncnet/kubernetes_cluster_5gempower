@@ -5,6 +5,8 @@ sed -i 's/CELL_ID_REPLACE/'$cell_id'/g' /empower-srsLTE/build/srsenb/src/enb.con
 sed -i 's/TAC_REPLACE/'$tac'/g' /empower-srsLTE/build/srsenb/src/enb.conf
 sed -i 's/MCC_REPLACE/'$mcc'/g' /empower-srsLTE/build/srsenb/src/enb.conf
 sed -i 's/MNC_REPLACE/'$mnc'/g' /empower-srsLTE/build/srsenb/src/enb.conf
+sed -i 's/N_PRB_REPLACE/'$n_prb'/g' /empower-srsLTE/build/srsenb/src/enb.conf
+sed -i 's/DL_EARFCN_REPLACE/'$dl_earfcn'/g' /empower-srsLTE/build/srsenb/src/enb.conf
 
 
 if [ "$empower_controller" = "yes" ]; then
@@ -33,20 +35,38 @@ fi
 
 
 if [ -z "$epc_pod_addr" ]; then
-    while [ $(curl -s -o /dev/null -w "%{http_code}" epc-service:9998 --connect-timeout 5) != 200 ]
+
+    while [ -z $(getent hosts epc-service-pod | awk '{ print $1 }') ]
     do
         echo "Waiting for the epc to come up..."
         sleep 10
     done
 
     echo "Epc service found"
-    EPC_POD_ADDR=$(curl epc-service:9998)
+    EPC_POD_ADDR=$(getent hosts epc-service-pod | awk '{ print $1 }')
+
 else
     EPC_POD_ADDR=$epc_pod_addr
 fi
 
 if [ -z "$local_pod_addr" ]; then
-    LOCAL_POD_ADDR=$(ip route get 1 | awk '{print $(NF-2);exit}')
+
+    if [ "$ipsec" = "yes" ]; then
+
+        echo "Using IPSec"
+        while [ -z $(ip route list table 220 | awk '{print $NF}') ]
+        do
+            echo "Waiting for the ipsec tunnel to be established..."
+            sleep 10
+        done
+        
+        LOCAL_POD_ADDR=$(ip route list table 220 | awk '{print $NF}')
+        echo "IPSec server found, local virtual ip: $LOCAL_POD_ADDR"
+
+    else
+        LOCAL_POD_ADDR=$(ip route get 1 | awk '{print $(NF-2);exit}')
+    fi
+
 else
     LOCAL_POD_ADDR=$local_pod_addr
 fi
