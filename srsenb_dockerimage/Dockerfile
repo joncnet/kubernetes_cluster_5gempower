@@ -21,9 +21,6 @@ RUN wget http://files.ettus.com/binaries/uhd/uhd_003.010.001.001-release/uhd-3.1
 # Dependencies for SRSeNB
 RUN apt-get -yq --no-install-recommends --assume-yes install libfftw3-dev libmbedtls-dev libboost-program-options-dev libconfig++-dev libsctp-dev
 
-
-ENV sfsdfs=sfsd
-
 # Fetch and building empower-proto 
 RUN git clone https://github.com/5g-empower/empower-enb-proto && cd empower-enb-proto && make && make install
 
